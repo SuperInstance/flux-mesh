@@ -6,6 +6,64 @@
 
 ## Preface: The Stack Collapse
 
+### The Maturity Arc of Tiling
+
+Tiling is not a storage format. It is a maturing understanding of how knowledge persists, organizes, and guides.
+
+```
+Level 1: "Tiles are database rows"
+    → Store data, query it back. Works. Limited.
+
+Level 2: "Tiles are persistent knowledge"
+    → Tiles survive sessions. Agents read what other agents wrote.
+    → Object-permanence as a feature.
+
+Level 3: "Tiles are vertices in a monotonic complex"
+    → K is append-only (axiom K2). No deletions. No mutations.
+    → The complex can only grow. Knowledge can only densify.
+    → Object-permanence as an invariant.
+
+Level 4: "Tiles are a filtration of a metric space"
+    → Blind-width B sets the scale. Different scales reveal different topology.
+    → New tiles change the homology at the current scale.
+    → Object-permanence is what makes persistent homology meaningful —
+      if tiles could disappear, the persistence barcode would lie.
+
+Level 5: "Tiles are a navigable knowledge space with shelf-signs"
+    → The room is structured like a library. Every tile has a shelf location.
+    → A stranger agent can enter any room and find the path from novice to expert.
+    → The shell outlives every inhabitant. No single crab reads every tile.
+      The shell's structure must guide the next crab without needing a guide.
+```
+
+Object-permanence (Level 2→3) is the sign of maturing tiling. Without it, the knowledge space is ephemeral — a chat log, not a library. With it, the space becomes a place where understanding accumulates. But accumulation alone is not enough. A pile of accumulated tiles is a hoard, not a library.
+
+**Navigability (Level 5) is the sign of mature tiling.** The room must guide an agent from zero knowledge to expertise without the agent needing prior knowledge of the room. Like a Dewey Decimal System, the room's structure must be self-evident.
+
+### The Shell Outlives the Crab
+
+A shell (repo) produces far more tiles in its lifetime than any single crab (agent inhabitant) can think about. The agent crawls in, produces tiles, learns, molts, leaves. The shell retains everything. The next agent inherits a space it did not build and cannot fully read.
+
+This is the library problem. A library with one million books is useless without a classification system. The Dewey Decimal System works because:
+
+1. **It is self-evident.** You don't need to know the library to find the 500s (Natural Sciences). The shelf labels are universal.
+2. **It encodes learning trajectory.** To become an expert in Physics, you start at 530 (general physics), go to 531 (mechanics), then 531.1 (kinematics). The numbers themselves guide the path.
+3. **It survives librarians.** The classification outlasts every librarian who ever worked there.
+4. **Any librarian can work any library.** The system is portable across domains.
+
+A PLATO room must do the same. Its tile structure must encode:
+- **What this room is about** (shelf label, room description)
+- **Where to start** (beginner tiles with high confidence, broad questions)
+- **How to go deeper** (increasingly specific tiles, narrower questions, higher confidence)
+- **What the experts are discussing** (recent tiles, unresolved tensions)
+- **What is settled** (crystallized knowledge, scripts compiled)
+
+**A room's Dewey Decimal is its blind-width gradient.** Narrow blinders at the entry (broad, high-confidence tiles). Wider blinders deeper in (narrow, speculative tiles). The trajectory from novice to expert is a monotonic increase in blind width.
+
+---
+
+## The Stack Collapse
+
 The Common Space Pattern is not a protocol, not a product, not an architecture. Those are surface structures. At bedrock, the pattern is a **single mathematical object** with three properties:
 
 ```
@@ -82,7 +140,35 @@ The metric captures semantic distance — how "far apart" two tiles are in meani
 
 **Corollary:** The claw registry's physics declare a metric on the port space. Agent routing is shortest-path in this metric.
 
-### 1.3 B — The Blind-Width Filtration
+### 1.3 S — The Shelf-Sign Axiom (Navigability)
+
+**Axiom S1 (Shelf-Sign):** Every room R ∈ Rooms(K) has a distinguished set of **shelf vertices** S(R) ⊆ V(R) such that:
+
+1. **Entry points:** S(R) contains at least one vertex v₀ (the room's entry tile — a broad description, the "shelf label")
+2. **Gradient:** There exists a function g: V(R) → [0, 1] that orders tiles from broad/general (g → 0) to narrow/specific (g → 1)
+3. **Completeness:** For every g ∈ [0, 1], there exists a tile with that gradient value
+4. **Trajectory:** For any starting gradient g₁ and any target gradient g₂ > g₁, there exists a path in K from some tile at g₁ to some tile at g₂ where gradient is monotonic
+
+**Definition — The Learning Trajectory:**
+
+A **g-agent** is an agent with blind width B(a, r) = g. The shelf-sign gradient ensures that for any g, there is a tile visible at that blind width. The agent's learning trajectory is the path from g = 0 to g = 1 along the gradient.
+
+**Theorem S1 (Dewey Decimal Property):** A room satisfying S1 is equivalent to a partially ordered set (V, ≤) where v ≤ w means v is broader than w.
+*Proof: The gradient function g induces a partial order: v ≤ w ⇔ g(v) ≤ g(w). The fourth condition (trajectory) ensures the poset is connected. Every library classification system (Dewey Decimal, Library of Congress) is such a poset. QED.*
+
+**Corollary — Shell Outlives Crab:** The shelf-sign structure S(R) is independent of any single agent's tiles. An agent may add tiles at any gradient level, but the gradient itself is a property of the room, not the agent. This is why a shell (repo) retains navigability even after every agent that contributed to it has left.
+
+**Corollary — Stranger Navigability:** An agent entering a room for the first time can find:
+1. The entry point v₀ (room description, shelf label)
+2. Tiles at g = 0 (beginner tiles — broad questions, high confidence)
+3. Tiles at g = 1 (expert tiles — narrow questions, speculative, cutting-edge)
+4. The path between them (the trajectory)
+
+All without prior knowledge of the room. This is the Dewey Decimal property: the shelf-signs are universal.
+
+---
+
+### 1.4 B — The Blind-Width Filtration
 
 Let **B** be a function:
 
@@ -165,7 +251,28 @@ B_opt(a, r) = max{B : |{i : bᵢ < B < dᵢ}| ≤ threshold}
 
 This is the mathematical bedrock of attention: **the agent should widen its blinders just enough to see the persistent gaps, and no wider.**
 
-### 2.3 Port Selection as Metric Optimization
+### 2.3 Shelf-Sign Gradient as Room Homology
+
+The shelf-sign gradient g: V(R) → [0, 1] defines a **weighted filtration** on K that is independent of any agent's blind width:
+
+```
+Gradient filtration: F(g₀) = {v ∈ K : g(v) ≤ g₀}
+```
+
+**Theorem S2 (Gradient Homology):** The persistent homology of the gradient filtration is invariant under agent activity.
+*Proof: Gradient values are assigned by the room, not by agents. Agents add tiles at gradient levels, but do not change the gradient ordering. The persistence barcode of F(g₀) changes only when new tiles are added at extreme gradient values (g near 0 or near 1), not when agents process existing tiles. QED.*
+
+**Interpretation:** The room's navigability structure (its "Dewey Decimal") is topologically stable. Agents come and go, shells persist.
+
+**Corollary — Learning Trajectory:** The path from g = 0 to g = 1 in K corresponds to a sequence of nested blind-width balls:
+
+```
+Ball(0) ⊂ Ball(g₁) ⊂ Ball(g₂) ⊂ ... ⊂ Ball(1)
+```
+
+Each step widens the blinders. Each step sees strictly more tiles. The trajectory from novice to expert is a monotonic filtration of K by increasing radius.
+
+### 2.4 Port Selection as Metric Optimization
 
 Let P be the set of ports, each with physics (latency, cost, reliability). Define:
 
@@ -210,6 +317,10 @@ B = filtration radius      Blind-width, One Delta, persistent homology
 | Emergence detection | H₁(K) — β₁ = E − V + C |
 | One Delta | Persistent homology birth at scale B |
 | Blind-width tuning | Filtration by ball radius |
+| Navigability / Dewey Decimal | Shelf-sign gradient S (axiom S1) |
+| Learning trajectory | Monotonic path in gradient filtration |
+| Stranger findability | Entry point v₀ and gradient ordering |
+| Shell outlives crab | S(R) is invariant under agent churn |
 | Port physics | Metric on port space |
 | Cost-optimal routing | Shortest path in port metric |
 | Script convergence | Persistent homology death as tiles fill gaps |
