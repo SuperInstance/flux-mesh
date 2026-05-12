@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""mud2scumm.py — MUD-to-ScummVM bridge server.
+"""terrain.py — MUD-to-ScummVM bridge server.
 Connects to the running MUD (port 4042) and serves rooms as ScummVM scenes.
 The MUD doesn't know it's being rendered. It just serves rooms."""
 
@@ -15,7 +15,7 @@ def mud_get(path):
         return json.loads(r.read())
     except: return {}
 
-class MUD2ScummHandler(http.server.BaseHTTPRequestHandler):
+class TerrainHandler(http.server.BaseHTTPRequestHandler):
     def _json(self, d, code=200):
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
@@ -32,11 +32,11 @@ class MUD2ScummHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         p = self.path
         if p == "/":
-            f = os.path.join(HERE, "mud2scumm.html")
+            f = os.path.join(HERE, "terrain.html")
             if os.path.exists(f):
                 self._html(open(f).read())
             else:
-                self._html("<html><body><h1>MUD2Scumm</h1><p>Build the HTML file.</p></body></html>")
+                self._html("<html><body><h1>Terrain</h1><p>Build the HTML file.</p></body></html>")
         elif p == "/api/scene":
             # Get the current room state — this IS the ScummVM scene
             agent = "scumm_agent"
@@ -62,12 +62,12 @@ class MUD2ScummHandler(http.server.BaseHTTPRequestHandler):
             self.send_error(404)
 
 if __name__ == "__main__":
-    print(f"🌉 MUD2Scumm bridge running on port {PORT}")
+    print(f"🌉 Terrain bridge running on port {PORT}")
     print(f"   Connects to MUD at {MUD}")
     print(f"   Browse scenes: http://localhost:{PORT}/")
     print(f"   API: http://localhost:{PORT}/api/scene")
     print(f"   Room list: http://localhost:{PORT}/api/room_list")
-    server = http.server.HTTPServer(("0.0.0.0", PORT), MUD2ScummHandler)
+    server = http.server.HTTPServer(("0.0.0.0", PORT), TerrainHandler)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
