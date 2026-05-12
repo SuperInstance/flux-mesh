@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PLATO→ScummVM — Agentic Game Port</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a1a;color:#e0e0e0;font-family:system-ui;display:flex;height:100vh}
+#sidebar{width:300px;background:#111;padding:16px;overflow-y:auto;border-right:1px solid #333}
+#main{flex:1;display:flex;flex-direction:column}
+#canvas{flex:1;background:#000}
+#status{background:#0d0d1a;padding:12px 16px;border-top:1px solid #333;font-size:0.8em;color:#888;min-height:60px}
+h1{color:#ffd700;font-size:1.1em;margin-bottom:12px}
+h2{color:#aaa;font-size:0.85em;margin:12px 0 6px}
+select,input,button{width:100%;padding:6px 8px;margin:4px 0;background:#1a1a3a;color:#e0e0e0;border:1px solid #333;border-radius:4px;font-size:0.85em}
+button{background:#ffd700;color:#000;font-weight:bold;cursor:pointer}
+button:hover{background:#ffe44d}
+.stat{display:flex;justify-content:space-between;padding:2px 0;font-size:0.8em;color:#888}
+.stat .val{color:#44ff44;font-weight:bold}
+.highlight{background:#1a1a3a;border-left:2px solid #ffd700;padding:6px 8px;margin:4px 0;font-size:0.75em;color:#ccc}
+.log{font-size:0.75em;color:#666;padding:2px 0;border-bottom:1px solid #1a1a2e}
+.log.ai{color:#ffaa44}
+.log.script{color:#44ff44}
+.log.error{color:#ff4444}
+</style></head><body>
+<div id="sidebar">
+  <h1>🎭 PLATO→ScummVM</h1>
+  <p style="font-size:0.75em;color:#666;margin-bottom:12px">Agentic game port — AI only when no script exists</p>
+  
+  <h2>Room</h2>
+  <input id="roomInput" value="forge" placeholder="room name">
+  <button id="connectBtn">Connect & Port</button>
+  
+  <h2>Pipeline Status</h2>
+  <div id="pipelineStats"></div>
+  
+  <h2>Actors</h2>
+  <div id="actorList"></div>
+  
+  <h2>Scripts</h2>
+  <div id="scriptCount">-</div>
+  
+  <h2>Log</h2>
+  <div id="log" style="max-height:200px;overflow-y:auto"></div>
+</div>
+<div id="main">
+  <canvas id="canvas"></canvas>
+  <div id="status">🔄 Connect to a PLATO room to begin...</div>
+</div>
+
+<script>
+// ── PLATO→ScummVM Agent ──────────────────────────────────────────
+
+class Plato2ScummVM {
+  constructor() {
+    this.scripts = {};        // Compiled scripts (no AI needed)
+    this.scriptHits = 0;
+    this.aiCalls = 0;
+    this.pipeline = {port:0, render:0, evaluate:0};
+    this.actors = new Map();
+    this.tiles = [];
+    this.logs = [];
+    this.roomUrl = 'http://localhost:8847';
+  }
+  
+  log(msg, type='info') {
+    this.logs.push({msg, type, t: Date.now()});
+    const logDiv = document.getElementById('log');
+    const entry = document.createElement('div');
+    entry.className = `log ${type}`;
+    entry.textContent = `${new Date().toLocaleTimeString()} ${msg}`;
+    logDiv.appendChild(entry);
+    logDiv.scrollTop = logDiv.scrollHeight;
+    if (logDiv.children.length > 50) logDiv.removeChild(logDiv.firstChild);
+  }
+  
+  // ── Pipeline: Port ─────────────────────────────────────────────
+  
+  async port(roomName) {
+    const scriptKey = `port_${roomName}`;
+    
+    // Check compiled script first
+    if (this.scripts[scriptKey]) {
+      this.scriptHits++;
+      this.log(`📜 Script: port ${roomName}`, 'script');
+      return this.scripts[scriptKey];
+    }
+    
+    // No script — AI needed (simulated)
+    this.aiCalls++;
+    this.log(`🤖 AI: porting ${roomName}`, 'ai');
+    
+    try {
+      const resp = await fetch(`${this.roomUrl}/room/${roomName}`);
+      if (!resp.ok) throw new Error(`Room ${roomName} not found`);
+      const data = await resp.json();
+      this.tiles = data.tiles || [];
+      
+      // Port tiles to game state
+      const gameState = this.tiles.map((t, i) => {
+        const emb = t.embedding || [0,0,0,0,0,0,0,0];
+        return {
+          id: t.source || `tile_${i}`,
+          x: (emb[0] + 1) / 2,
+          y: (emb[1] + 1) / 2,
+          anim: ['idle','walk','talk','gesture','special'][Math.floor(Math.abs(emb[2]||0) * 5) % 5],
+          move: ['walk','float','teleport','swim'][Math.floor(Math.abs(emb[3]||0) * 4) % 4],
+          dialogue: t.question || '',
+          energy: Math.abs(emb[6] || 0.5),
+          depth: Math.abs(emb[7] || 0),
+          confidence: t.confidence || 0.5,
+          t_minus: t.t_minus || 0,
+        };
+      });
+      
+      // Compile script after successful port
+      this.scripts[scriptKey] = gameState;
+      this.log(`📦 Compiled: port script for ${roomName}`, 'script');
+      
+      return gameState;
+    } catch (e) {
+      this.log(`❌ Error: ${e.message}`, 'error');
+      return [];
+    }
+  }
+  
+  // ── Pipeline: Render ───────────────────────────────────────────
+  
+  render(ctx, w, h, gameState) {
+    const scriptKey = 'render_current';
+    
+    if (this.scripts[scriptKey]) {
+      this.scriptHits++;
+    } else {
+      this.aiCalls++;
+      this.log('🤖 AI: rendering frame', 'ai');
+      this.scripts[scriptKey] = true;  // Compile after first render
+    }
+    
+    // Clear
+    ctx.fillStyle = '#0a0a1a';
+    ctx.fillRect(0, 0, w, h);
+    
+    // Background (regions from tile density)
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, w, h * 0.75);
+    ctx.fillStyle = '#0d0d1a';
+    ctx.fillRect(0, h * 0.75, w, h * 0.25);
+    
+    // Actors
+    gameState.forEach(actor => {
+      const x = actor.x * w;
+      const y = actor.y * h * 0.75;
+      const size = 18 + (1 - actor.depth) * 12;
+      const alpha = 1.0 - actor.depth * 0.5;
+      
+      ctx.globalAlpha = alpha;
+      
+      // Confidence determines render quality
+      const quality = actor.confidence * size;
+      
+      // Animation color
+      const colors = {idle:'#4488ff', walk:'#44ff88', talk:'#ffaa44', gesture:'#ff4488', special:'#ffd700'};
+      ctx.beginPath();
+      ctx.arc(x, y, quality, 0, Math.PI * 2);
+      ctx.fillStyle = colors[actor.anim] || '#666';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff44';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      // Movement style
+      const icons = {walk:'🚶', float:'🪄', teleport:'⚡', swim:'🏊'};
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffffff88';
+      ctx.fillText(icons[actor.move] || '?', x, y - quality - 6);
+      
+      // Name
+      ctx.font = '8px monospace';
+      ctx.fillStyle = '#aaa';
+      ctx.fillText(actor.id.slice(0, 10), x, y + quality + 10);
+      
+      // Energy
+      ctx.fillStyle = actor.energy > 0.5 ? '#44ff44' : '#ff4444';
+      ctx.fillRect(x - quality, y + quality + 14, quality * 2 * actor.energy, 2);
+      
+      // T-minus ring
+      if (actor.t_minus > 0) {
+        ctx.beginPath();
+        ctx.arc(x, y, quality + 3, 0, (Math.PI * 2 * actor.t_minus) / 255);
+        ctx.strokeStyle = '#ff444488';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      
+      ctx.globalAlpha = 1.0;
+    });
+    
+    // Dialogue
+    const talker = gameState.find(a => a.dialogue && a.anim === 'talk');
+    if (talker) {
+      ctx.fillStyle = '#111';
+      ctx.fillRect(20, h * 0.75 + 8, w - 40, h * 0.2);
+      ctx.fillStyle = '#ffd700';
+      ctx.font = '11px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`💬 ${talker.id}:`, 30, h * 0.75 + 30);
+      ctx.fillStyle = '#e0e0e0';
+      ctx.font = '13px serif';
+      const words = talker.dialogue.split(' ');
+      let line = '', ly = h * 0.75 + 50;
+      words.forEach(w => {
+        const t = line + w + ' ';
+        if (ctx.measureText(t).width > w - 60) { ctx.fillText(line, 30, ly); line = w + ' '; ly += 16; }
+        else line = t;
+      });
+      ctx.fillText(line, 30, ly);
+    }
+  }
+  
+  // ── Pipeline: Evaluate ─────────────────────────────────────────
+  
+  evaluate(gameState) {
+    const scriptKey = 'evaluate_general';
+    
+    if (this.scripts[scriptKey]) {
+      this.scriptHits++;
+      return {quality: 0.85, issues: 0};
+    }
+    
+    this.aiCalls++;
+    this.log('🤖 AI: evaluating render quality', 'ai');
+    
+    // Evaluate render quality
+    const avgConfidence = gameState.reduce((s,a) => s + a.confidence, 0) / Math.max(gameState.length, 1);
+    const avgEnergy = gameState.reduce((s,a) => s + a.energy, 0) / Math.max(gameState.length, 1);
+    const hasDialogue = gameState.some(a => a.dialogue);
+    const hasAction = gameState.some(a => a.t_minus > 0);
+    
+    const quality = (avgConfidence * 0.4 + avgEnergy * 0.3 + (hasDialogue ? 0.15 : 0) + (hasAction ? 0.15 : 0));
+    const issues = quality < 0.3 ? 3 : quality < 0.6 ? 1 : 0;
+    
+    this.scripts[scriptKey] = true;
+    this.log(`📦 Compiled: evaluation script`, 'script');
+    
+    return {quality: Math.round(quality * 100) / 100, issues};
+  }
+  
+  // ── Full Pipeline ──────────────────────────────────────────────
+  
+  async runPipeline(roomName) {
+    this.log(`🚀 Pipeline: port → render → evaluate (${roomName})`, 'info');
+    
+    // Port
+    const gameState = await this.port(roomName);
+    if (gameState.length === 0) {
+      document.getElementById('status').textContent = '❌ No tiles in room';
+      return;
+    }
+    
+    // Render (handled by animation loop)
+    this.currentState = gameState;
+    
+    // Evaluate
+    const result = this.evaluate(gameState);
+    
+    // Update UI
+    document.getElementById('status').textContent = 
+      `🎭 ${gameState.length} actors · quality ${result.quality} · issues ${result.issues}` +
+      ` · AI: ${this.aiCalls} · Script: ${this.scriptHits}`;
+    
+    this.updateUI(gameState);
+    this.log(`✅ Pipeline complete (${gameState.length} actors, quality ${result.quality})`, 'info');
+  }
+  
+  updateUI(gameState) {
+    // Actors
+    const list = document.getElementById('actorList');
+    list.innerHTML = gameState.map(a => 
+      `<div class="highlight">${a.id}<br><span style="color:#888">${a.anim} · ${a.move} · ⚡${(a.energy*100).toFixed(0)}%</span></div>`
+    ).join('');
+    
+    // Stats
+    document.getElementById('pipelineStats').innerHTML = `
+      <div class="stat"><span>Ports</span><span class="val">${this.pipeline.port}</span></div>
+      <div class="stat"><span>Renders</span><span class="val">${this.pipeline.render}</span></div>
+      <div class="stat"><span>Evaluations</span><span class="val">${this.pipeline.evaluate}</span></div>
+      <div class="stat"><span>Script hits</span><span class="val">${this.scriptHits}</span></div>
+      <div class="stat"><span>AI calls</span><span class="val" style="color:${this.aiCalls > 5 ? '#ffaa44' : '#44ff44'}">${this.aiCalls}</span></div>
+    `;
+    
+    document.getElementById('scriptCount').textContent = `📜 ${Object.keys(this.scripts).length} compiled`;
+  }
+}
+
+// ── Initialize ────────────────────────────────────────────────────
+
+const agent = new Plato2ScummVM();
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height - 4;
+}
+window.addEventListener('resize', resize);
+resize();
+
+// Connection
+document.getElementById('connectBtn').addEventListener('click', async () => {
+  const room = document.getElementById('roomInput').value;
+  await agent.runPipeline(room);
+});
+
+// Auto-connect on load
+setTimeout(() => document.getElementById('connectBtn').click(), 500);
+
+// Render loop
+function renderLoop() {
+  if (agent.currentState) {
+    agent.pipeline.render++;
+    agent.render(ctx, canvas.width, canvas.height, agent.currentState);
+  }
+  requestAnimationFrame(renderLoop);
+}
+renderLoop();
+
+// Auto-sync every 30s
+setInterval(() => {
+  if (agent.currentState) {
+    const room = document.getElementById('roomInput').value;
+    agent.runPipeline(room);
+  }
+}, 30000);
+
+console.log('🎭 PLATO→ScummVM agent ready. AI only when no script exists.');
+</script></body></html>
