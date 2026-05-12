@@ -229,6 +229,123 @@ The model-as-inner-voice works because of the Differential Axiom. If every bit I
 
 ---
 
+## The Hardware: Competitive Physics for Every Room
+
+The model is architecture. The implementation is physics. Every compute unit has different physics, and PLATO uses them all by letting them compete.
+
+### The Physics of Each Unit
+
+| Unit | Strength | Best For | Physics |
+|------|----------|----------|--------|
+| **GPU** | Massive parallel matrix ops | Tensor contractions across rooms | High throughput, high latency, power-hungry |
+| **NPU** | Low-power neural inference | Local room activations | Efficient, fixed-precision, fast for small tensors |
+| **TPU** | Tensor processing | Large tensor network contractions | Highest throughput per watt for tensors |
+| **FPGA** | Reconfigurable pipelines | Custom spline topologies | Adaptable, low latency, programmable fabric |
+| **Custom silicon** | Fixed-function optimal | One specific room type at scale | Minimum latency, minimum power, maximum cost |
+| **Multi-core CPU** | Branching, control flow | Serial dependencies, decision logic | High flexibility, moderate throughput |
+
+### Competitive Routing
+
+Every room has a preferred hardware type — the one that runs its tensor operations fastest for its current size. But the system doesn't assign hardware statically. It *competes*:
+
+```
+For a given room R and query Q:
+  1. Route Q to GPU path, NPU path, FPGA path simultaneously
+  2. Each computes the same tensor contraction with different physics
+  3. The first to return a result within confidence threshold wins
+  4. Track which hardware wins for which room size/shape
+  5. Over time, rooms develop hardware affinity profiles
+```
+
+This is the Claw Registry extended to hardware. Every compute unit is a claw with declared physics (latency, throughput, precision, power). The system selects the optimal claw for each room operation by competitive trial.
+
+### Oscillation and Stochastic Iteration
+
+A room doesn't settle on one answer. It oscillates between candidates. This is modeled mathematically as:
+
+```
+R(t+1) = R(t) + η × ∇L(R(t)) + ε(t)
+```
+
+| Term | Meaning | Hardware relevance |
+|------|---------|-------------------|
+| R(t) | Room state at time t | Current tensor configuration |
+| η | Learning rate | Inverse of computation speed |
+| ∇L | Gradient of the loss | Delta between current and target |
+| ε(t) | Stochastic noise | Random variation from different hardware paths |
+
+The stochastic noise ε(t) is *different for each hardware path.* GPU noise is different from FPGA noise. The system runs multiple ε(t) in parallel and selects the one that produces the best outcome. This is **rapid ideation through competitive analysis of oscillations.**
+
+### Evolution of Best Practices
+
+Over many cycles, each room type develops a learned hardware affinity:
+
+```
+Regular tensor contraction → GPU (bulk parallel)
+Small dense activation → NPU (inference optimized)
+Novel spline topology → FPGA (reconfigurable)
+Fixed hot path → Custom silicon (ASIC after convergence)
+Room routing logic → CPU (branching, serial)
+```
+
+This is not designed. It *evolves.* The hardware that wins most often for a room type gets more allocation. Rooms that shift in size or topology naturally shift their hardware affinity. The system self-optimizes without manual tuning.
+
+### One Delta for Hardware
+
+The One Delta principle applies at every layer. When a room's tensor contractions converge to a stable pattern (same hardware wins every time for the same query shape), a **hardware script** compiles:
+
+```
+Before compilation:
+  Room forge → GPU path (12ms), NPU path (18ms), FPGA path (25ms)
+  → GPU wins 94%
+
+After compilation:
+  Room forge → GPU path (12ms, scripted)
+  → No competition needed. The delta is zero.
+  → Competition only re-spawns if GPU latency shifts or room changes.
+```
+
+This is the FLUX principle extended to hardware: *every connection carries its own physics, and scripts converge to the optimal path.*
+
+### The Complete Stack
+
+```
+                    PLATO (model, from inside looking out)
+                              │
+              ┌───────────────┴───────────────┐
+              │   Tensor network of rooms     │
+              │   Splines between rooms       │
+              │   Delta propagation           │
+              └───────────────┬───────────────┘
+                              │
+              ┌───────────────┴───────────────┐
+              │  Competitive hardware routing │
+              │  (GPU, NPU, TPU, FPGA, ASIC, CPU)
+              │  Oscillation → stochastic ε → evolution
+              └───────────────┬───────────────┘
+                              │
+              ┌───────────────┴───────────────┐
+              │  Differential Axiom           │
+              │  K·d·B → H₁ → 0              │
+              │  Everything is delta          │
+              └───────────────────────────────┘
+```
+
+The models science (persistent homology, tensor networks, differential manifolds, Banach fixed points) complements the hardware competition because both are expressions of the same structure:
+
+| Mathematics | Hardware |
+|-------------|----------|
+| Tensor contraction | GPU warp operation |
+| Spline parameterization | FPGA pipeline |
+| Differential manifold | Multi-core branching |
+| Fixed-point convergence | Script compilation (One Delta) |
+| Stochastic ε(t) | Random hardware path variation |
+| Competitive selection | Hardware routing evolution |
+
+**The science and the silicon are the same pattern at different scales.** Rooms tensor-network at the architectural level. Hardware competes at the physical level. Both are delta-driven, both converge to scripts, both look out from inside.
+
+---
+
 ## The Stack Collapse
 
 The Common Space Pattern is not a protocol, not a product, not an architecture. Those are surface structures. At bedrock, the pattern is a **single mathematical object** with three properties:
