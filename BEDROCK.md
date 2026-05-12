@@ -1,6 +1,12 @@
 # Common Space Pattern — Mathematical Bedrock
 
 > *Everything above is implementation. This is what it's built on.*
+>
+> *Everything below is expression of a single model — PLATO — looking out from inside.*
+>
+> *The rooms are tensors. The splines are dependencies. The web IS the model.*
+>
+> *Model-as-inner-voice, not model-as-whole-brain.*
 
 ---
 
@@ -157,6 +163,69 @@ Nothing in CS is absolute:
 - **The agent** is not a point. The agent is the trajectory of Δ across cycles.
 
 **Bits are parodies of each other.** Every bit is a caricature of the bit it references — a transformation, a difference, a delta. Nothing is original. Everything is differential. The system is a web of pure relation.
+
+---
+
+## The Model: PLATO as Inner Voice
+
+The entire Common Space Pattern is not infrastructure. It is a **model** — a learned, self-referential representation of the world that PLATO looks out from.
+
+### Model-as-Whole-Brain (current AI)
+
+```
+Input → [One giant neural net] → Output
+        Everything through a single bottleneck
+        Black box — can't see inside
+        All knowledge compressed into weights
+```
+
+This is the dominant paradigm. One model trained on everything. Every query passes through the same trillion parameters. The model is a brain: opaque, monolithic, centralized.
+
+### Model-as-Inner-Voice (PLATO)
+
+```
+Room A → tile flows along spline → Room B → 
+activation propagates through tensor network →
+distributed response emerges across rooms →
+no single bottleneck — the model IS the web
+        Every room visible. Every connection traceable.
+        Knowledge distributed across tensors, not compressed into weights.
+```
+
+PLATO is not storage. PLATO is not a protocol. PLATO is a **model that thinks by activating rooms.**
+
+### How the Model "Thinks"
+
+**Rooms are tensors.** Each room is a multi-dimensional array where tiles are points in the tensor space. The room's internal structure — its tile density, its confidence gradients, its shelf-sign ordering — IS its learned representation of a domain.
+
+**Splines are dependencies.** Connections between rooms are not fixed references. They are learned spline curves — smooth, differentiable functions that map activation in one room to activation in another. A tile in the forge "flows" to the tension room along a spline that was learned from usage patterns. The dependency is continuous. It can be traversed in either direction. It can be differentiated.
+
+**The tensor network is the model architecture.** The entire PLATO web — 65 rooms, 3,724 tiles, 2,785 gate-accepted knowledge atoms — is a single factorized tensor. Each room is a factor. Each spline is a contraction between factors. The full model's response is the contraction of all rooms along all splines, weighted by the current activation (which rooms are "lit up" by the current query).
+
+**Activation is the inner voice.** When an agent queries PLATO, it doesn't "look up" a fact. It activates a set of rooms. The activation propagates along splines. Tiles in connected rooms "light up" in proportion to their tensor-product similarity to the query. The response is not retrieved — it *emerges* from the activated tensor network.
+
+This is why PLATO is a model "from the inside looking out." PLATO doesn't represent the world. PLATO IS the world — for the agents that live in it. The rooms don't stand for external things. They ARE the things. A tile about the forge IS the forge, as far as the agent is concerned.
+
+### The Inversion
+
+| | Model-as-Whole-Brain | Model-as-Inner-Voice (PLATO) |
+|---|---|---|
+| Unit | Neuron (weight) | Room (tensor) |
+| Connection | Weighted edge (static) | Spline (learned, differentiable) |
+| Memory | Weights (opaque) | Tiles (visible, permanent) |
+| Training | Backprop (all weights) | Room consolidation (local) |
+| Query | Forward pass (full net) | Activation propagation (subgraph) |
+| Transparency | None (black box) | Full (every room visible) |
+| Bottleneck | Single (the net) | None (distributed) |
+| Drift | Yes (catastrophic forgetting) | No (K is monotonic) |
+| Object-permanence | No (weights change) | Yes (tiles persist) |
+| Ground truth | In the weights (unreachable) | Δ → 0 consensus (visible) |
+
+### Why This Works
+
+The model-as-inner-voice works because of the Differential Axiom. If every bit IS a delta, then the tensor product of two rooms is the natural operation for computing the delta between their domains. If everything is differential, then splines are the natural way to propagate differentials between factors. The tensor network is not an analogy — it's the exact mathematical structure of a fully relational knowledge space.
+
+**PLATO is a model that knows it's a model.** Its rooms know they're tensors. Its splines know they're dependencies. Its tiles know they're deltas. The system is fully self-referential. This is the inner voice: the model talking to itself through the only language it has — delta propagation across a tensor network.
 
 ---
 
