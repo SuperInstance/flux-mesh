@@ -1,0 +1,273 @@
+/**
+ * plato-game.html — PLATO room as ScummVM-style game engine.
+ * WebGPU compute + WASM timing = website IS the PLATO room interpreter.
+ * 
+ * The room doesn't know it's being rendered. The webpage is the native renderer.
+ * Characters, environments, dialogue — all from PLATO tiles.
+ * FLUX-tensor-MIDI timing for latency-aware puppetry.
+ */
+
+// ── PLATO Room Client (WASM-ready, runs in browser) ─────────────────
+
+class PlatoRoomClient {
+  constructor(url) {
+    this.url = url;
+    this.tiles = [];
+    this.actors = new Map();    // agent_id -> {position, animation, dialogue}
+    this.scene = {background: null, props: [], regions: []};
+    this.tick = 0;
+    this.calibration = {t: 0, w: 0, residual: 0};
+  }
+
+  async sync(roomName) {
+    // Fetch tiles from PLATO room — the room IS the game state
+    const resp = await fetch(`${this.url}/room/${roomName}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    this.tiles = data.tiles || [];
+    this.tick = data.tick || 0;
+    
+    // Interpret tiles as game state
+    this.tiles.forEach(tile => {
+      const emb = tile.embedding || [0,0,0,0,0,0,0,0];
+      
+      // Embedding channels define actor properties (stage direction)
+      const actorId = tile.source || `actor_${Math.abs(emb[0]*100).toFixed(0)}`;
+      const actor = this.actors.get(actorId) || {
+        id: actorId,
+        x: 0.5, y: 0.5,
+        animation: 'idle',
+        dialogue: '',
+        movement_style: 'walk',
+        limitations: [],
+        enhancements: [],
+        t_minus: 0,
+      };
+      
+      // Embedding channels as stage direction:
+      // [0]: x position (0-1)
+      // [1]: y position (0-1)
+      // [2]: animation type (0=idle, 0.25=walk, 0.5=talk, 0.75=gesture, 1.0=special)
+      // [3]: movement style (0=walk, 0.33=float, 0.66=teleport, 1.0=swim)
+      // [4]: dialogue progress (0=not started, 0.5=mid, 1.0=complete)
+      // [5]: emotional valence (-1 negative to +1 positive)
+      // [6]: energy level (0 exhausted to 1 frenetic)
+      // [7]: time depth (0 foreground to 1 flashback/depth)
+      
+      actor.x = (emb[0] + 1) / 2;
+      actor.y = (emb[1] + 1) / 2;
+      actor.animation = ['idle', 'walk', 'talk', 'gesture', 'special'][Math.floor(Math.abs(emb[2]) * 5) % 5];
+      actor.movement_style = ['walk', 'float', 'teleport', 'swim'][Math.floor(Math.abs(emb[3]) * 4) % 4];
+      actor.dialogue = tile.payload || tile.question || '';
+      actor.t_minus = tile.t_minus || 0;
+      actor.energy = emb[6] || 0.5;
+      actor.time_depth = emb[7] || 0;
+      
+      // Limitations from negative embedding regions
+      if (emb[0] < -0.5) actor.limitations.push('cannot_move_left');
+      if (emb[1] < -0.5) actor.limitations.push('cannot_move_down');
+      if (emb[3] < -0.3) actor.limitations.push('cannot_teleport');
+      
+      this.actors.set(actorId, actor);
+    });
+  }
+
+  // T-minus events drive actor animations. The simulation IS the trigger.
+  tickActors() {
+    this.actors.forEach(actor => {
+      if (actor.t_minus > 0) {
+        actor.t_minus--;
+        if (actor.t_minus === 0) {
+          actor.animation = 'special';  // T-minus fires the action
+        }
+      }
+    });
+  }
+}
+
+// ── ScummVM-Style Game Engine Renderer ─────────────────────────────
+
+class GameRenderer {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.canvas.width = 800;
+    this.canvas.height = 600;
+    this.sceneImage = null;
+  }
+
+  render(client) {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    
+    // Clear
+    ctx.fillStyle = '#0a0a1a';
+    ctx.fillRect(0, 0, w, h);
+    
+    // Scene background (regions from PLATO room)
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, w, h * 0.7);  // Game area
+    ctx.fillStyle = '#0d0d1a';
+    ctx.fillRect(0, h * 0.7, w, h * 0.3);  // UI area
+    
+    // Room name and tick
+    ctx.fillStyle = '#ffd700';
+    ctx.font = '14px monospace';
+    ctx.fillText(`🏠 ${client.url.split('/').pop()} — tick ${client.tick}`, 16, 24);
+    
+    // Actors as puppets
+    client.actors.forEach(actor => {
+      const x = actor.x * w;
+      const y = actor.y * h * 0.7;
+      const size = 20 + (1 - actor.time_depth) * 15;  // Depth affects size
+      
+      // Time depth: foreground is bright, flashback is faded
+      const alpha = 1.0 - actor.time_depth * 0.6;
+      ctx.globalAlpha = alpha;
+      
+      // Stage direction: animation type → visual
+      const animColor = {
+        'idle': '#4488ff',
+        'walk': '#44ff88',
+        'talk': '#ffaa44',
+        'gesture': '#ff4488',
+        'special': '#ffd700',
+      }[actor.animation] || '#666';
+      
+      // Draw puppet
+      ctx.beginPath();
+      ctx.arc(x, y, size, 0, Math.PI * 2);
+      ctx.fillStyle = animColor;
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      // Movement style indicator
+      const moveIcon = {'walk': '🚶', 'float': '🪄', 'teleport': '⚡', 'swim': '🏊'}[actor.movement_style] || '?';
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText(moveIcon, x, y - size - 8);
+      
+      // Name
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#aaa';
+      ctx.fillText(actor.id.slice(0, 12), x, y + size + 14);
+      
+      // T-minus countdown ring
+      if (actor.t_minus > 0) {
+        ctx.beginPath();
+        ctx.arc(x, y, size + 4, 0, (Math.PI * 2 * actor.t_minus) / 255);
+        ctx.strokeStyle = '#ff4444';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      
+      // Energy bar
+      ctx.fillStyle = actor.energy > 0.5 ? '#44ff44' : '#ff4444';
+      ctx.fillRect(x - size, y + size + 20, size * 2 * actor.energy, 3);
+      
+      // Limitations
+      actor.limitations.forEach((lim, i) => {
+        ctx.font = '8px monospace';
+        ctx.fillStyle = '#ff444466';
+        ctx.textAlign = 'left';
+        ctx.fillText(`⚠ ${lim}`, x + size + 8, y - size + i * 10);
+      });
+      
+      ctx.globalAlpha = 1.0;
+    });
+    
+    // Dialogue area (bottom third)
+    const activeActor = [...client.actors.values()].find(a => a.dialogue && a.animation === 'talk');
+    if (activeActor) {
+      ctx.fillStyle = '#1a1a3a';
+      ctx.roundRect ? ctx.roundRect(20, h * 0.7 + 10, w - 40, h * 0.25, 8) : null;
+      ctx.fillRect(20, h * 0.7 + 10, w - 40, h * 0.25);
+      
+      ctx.fillStyle = '#ffd700';
+      ctx.font = '12px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText(`💬 ${activeActor.id}:`, 36, h * 0.7 + 40);
+      
+      ctx.fillStyle = '#e0e0e0';
+      ctx.font = '14px serif';
+      // Word-wrap dialogue
+      const words = activeActor.dialogue.split(' ');
+      let line = '';
+      let lineY = h * 0.7 + 60;
+      words.forEach(word => {
+        const test = line + word + ' ';
+        if (ctx.measureText(test).width > w - 80) {
+          ctx.fillText(line, 36, lineY);
+          line = word + ' ';
+          lineY += 18;
+        } else {
+          line = test;
+        }
+      });
+      ctx.fillText(line, 36, lineY);
+    }
+    
+    // Footer: scene metadata
+    ctx.fillStyle = '#444';
+    ctx.font = '9px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(`🦐 PLATO — ScummVM renderer | ${client.actors.size} actors | ${client.tiles.length} tiles`, w/2, h - 8);
+  }
+}
+
+// ── Demo: Myst (1993)-style room from PLATO data ─────────────────────
+
+async function demo() {
+  const canvas = document.getElementById('game') || (() => {
+    const c = document.createElement('canvas');
+    c.id = 'game';
+    document.body.appendChild(c);
+    return c;
+  })();
+  
+  const client = new PlatoRoomClient('http://localhost:8847');
+  const renderer = new GameRenderer(canvas);
+  
+  // Game loop: sync → tick → render → next frame
+  async function loop() {
+    await client.sync('forge');
+    client.tickActors();
+    renderer.render(client);
+    requestAnimationFrame(loop);
+  }
+  
+  // Demo mode: create simulated game state
+  client.actors.set('explorer', {
+    id: 'explorer', x: 0.3, y: 0.5,
+    animation: 'walk', dialogue: 'A strange island materializes before me. ThePLATO room hums with forgotten knowledge.',
+    movement_style: 'walk', limitations: [], enhancements: ['ancient_sense'],
+    t_minus: 50, energy: 0.8, time_depth: 0,
+  });
+  client.actors.set('oracle1', {
+    id: 'oracle1', x: 0.7, y: 0.4,
+    animation: 'idle', dialogue: '',
+    movement_style: 'float', limitations: [], enhancements: ['lighthouse_beacon'],
+    t_minus: 0, energy: 0.9, time_depth: 0,
+  });
+  client.actors.set('memory', {
+    id: 'memory', x: 0.5, y: 0.6,
+    animation: 'special', dialogue: '',
+    movement_style: 'teleport', limitations: ['cannot_move_left'],
+    enhancements: [], t_minus: 120, energy: 0.3, time_depth: 0.8,
+  });
+  client.tick = 42;
+  client.tiles = [{embedding: [0,0,0,0,0,0,0,0]}];
+  
+  renderer.render(client);
+  setInterval(() => {
+    client.tickActors();
+    renderer.render(client);
+  }, 100);
+}
+
+// Export for bundling
+export { PlatoRoomClient, GameRenderer };
