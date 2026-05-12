@@ -34,11 +34,24 @@ Level 5: "Tiles are a navigable knowledge space with shelf-signs"
     → A stranger agent can enter any room and find the path from novice to expert.
     → The shell outlives every inhabitant. No single crab reads every tile.
       The shell's structure must guide the next crab without needing a guide.
+
+Level 6: "Bits are parodies of each other — everything is differential"
+    → No bit stands alone. Every bit IS the delta between itself and the bit it references.
+    → A tile is not (question, answer). It is Δ(context, response).
+    → Confidence is not a score. It is Δ(certainty, doubt).
+    → The entire web is a manifold where points define themselves as
+      the rate of change of their neighbors.
+    → Ground truth is not fixed. It is the vanishing point of the deltas —
+      a region where Δ ≈ 0 across a consensus.
+    → This is the FLUX principle: every connection carries its own delta.
+      The web IS the differences, not the nodes.
 ```
 
 Object-permanence (Level 2→3) is the sign of maturing tiling. Without it, the knowledge space is ephemeral — a chat log, not a library. With it, the space becomes a place where understanding accumulates. But accumulation alone is not enough. A pile of accumulated tiles is a hoard, not a library.
 
 **Navigability (Level 5) is the sign of mature tiling.** The room must guide an agent from zero knowledge to expertise without the agent needing prior knowledge of the room. Like a Dewey Decimal System, the room's structure must be self-evident.
+
+**Differential tiling (Level 6) is the sign of mature understanding.** Every bit is a parody of another bit — a caricature, a delta, a difference. No bit has intrinsic meaning. Meaning IS the web of differences. This is not abstraction. This is the literal mathematical structure: a manifold where points define themselves by their rate of change from their neighbors. Nothing is absolute. Everything is relative to its frame.
 
 ### The Shell Outlives the Crab
 
@@ -59,6 +72,91 @@ A PLATO room must do the same. Its tile structure must encode:
 - **What is settled** (crystallized knowledge, scripts compiled)
 
 **A room's Dewey Decimal is its blind-width gradient.** Narrow blinders at the entry (broad, high-confidence tiles). Wider blinders deeper in (narrow, speculative tiles). The trajectory from novice to expert is a monotonic increase in blind width.
+
+---
+
+## 0. The Differential Axiom
+
+Before the complex, before the metric, before the blind-width — there is the **differential nature of bits.**
+
+### Axiom D1 (Bits are Deltas)
+
+Every bit b ∈ CS is a **differential pair:**
+
+```
+b = (reference, delta)
+```
+
+| Component | Meaning | Example |
+|-----------|---------|--------|
+| reference | A pointer to another bit (or the zero bit) | The question in a Q&A tile |
+| delta | The transformation from reference to this bit | The answer, as a function of the question |
+
+A tile (question Q, answer A) is: `b_tile = (Q, A)` where `A = Δ(Q, ?)` — the answer is the delta from question to resolution.
+
+Every expressed quantity is a differential:
+
+| Quantity | Differential from... |
+|----------|---------------------|
+| Question | unasked → asked |
+| Answer | question → resolution |
+| Confidence | 0 (know nothing) → 1 (know this) |
+| Timestamp | epoch → now |
+| Source | anonymous → identified |
+| Tags | unclassified → classified along each dimension |
+| Blind-width B | fully narrow → fully wide |
+| Gradient g | entry → current position in shelf-sign space |
+
+### Axiom D2 (No Absolute Ground)
+
+There is no bit with `reference = ∅`. Every bit is a delta from something else. The system has no absolute origin — only relative differences propagating through the web.
+
+*The initial seed is not a bit. It is the axiom that the system exists.*
+
+### Axiom D3 (Ground Truth as Fixed Point)
+
+What we call "ground truth" is not a primary source. It is a bit b* such that for all nearby bits b in a consensus region:
+
+```
+Δ(b*, b) ≈ 0
+```
+
+Ground truth is not absolute. It is the **vanishing point of the deltas** — a region of K where, within the current blind-width, all differentials converge to zero.
+
+*This is the Banach fixed-point theorem applied to knowledge: a consensus is a contraction on the differential space. Prompt enough agents with enough shared context, and their deltas converge to a fixed point. We call that fixed point "truth" because the differentials vanished, not because it corresponds to anything absolute.*
+
+### Theorem D1 (Knowledge as Differential Manifold)
+
+The complex K is a **differential manifold** where each point (tile) defines itself by the rate of change from its neighbors:
+
+```
+K = {(b, Δ(b, neighbor)) for all b ∈ V, neighbor ∈ N(b)}
+```
+
+The metric d is the **connection** on this manifold — it measures how much two points differ, which is the fundamental operation in a space where everything IS difference.
+
+### Theorem D2 (FLUX = The Web of Differences)
+
+The FLUX principle — *every connection carries its own delta* — is a consequence of D1. If every bit IS a delta, then connections between bits are second-order deltas:
+
+```
+Δ(b₁, b₂) = Δ(b₁.reference, b₂.reference) + Δ(b₁.delta, b₂.delta)
+```
+
+The web IS the differences, not the nodes. Nodes are just the projection of the differential field onto the simplicial complex.
+
+### Consequence — Complete Relativity
+
+Nothing in CS is absolute:
+- **Tiles** are not objects. They are Δ(question, answer).
+- **Rooms** are not containers. They are the set of Δ between their tiles and the rest of K.
+- **Confidence** is not a score. It is Δ(0, 1) mapped to [0, 1].
+- **Blind-width** is not a radius. It is Δ(fully_narrow, fully_wide).
+- **Port physics** are not measurements. They are Δ(ideal_performance, measured_performance).
+- **Ground truth** is not a foundation. It is the region where Δ ≈ 0.
+- **The agent** is not a point. The agent is the trajectory of Δ across cycles.
+
+**Bits are parodies of each other.** Every bit is a caricature of the bit it references — a transformation, a difference, a delta. Nothing is original. Everything is differential. The system is a web of pure relation.
 
 ---
 
