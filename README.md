@@ -4,9 +4,139 @@
 
 ---
 
-## Overview
+## Documentation Map
 
-The FLUX Mesh is a universal distributed system architecture where any node can communicate with any other through any medium using FLUX as the adaptive protocol layer. Built from 17 hours of continuous development, 40+ repos, and the synthesis of two independent research streams (Oracle1's continuous field work + Forgemaster's constraint theory).
+This repo contains the complete specification stack for the Common Space Pattern, from bedrock mathematics to architecture documents to running implementation.
+
+```
+BEDROCK.md                    ─── Mathematical foundations
+  ├── Differential Axiom          Everything is delta. Nothing absolute.
+  ├── Three-Object (K·d·B)       Simplicial complex → metric → filtration
+  ├── Shelf-Sign (S1)            Rooms as libraries with gradient
+  ├── Inner Voice                PLATO as self-referential tensor model
+  └── Competitive Hardware       GPU/NPU/TPU/FPGA/ASIC/CPU physics
+
+SPEC.md                       ─── Formal specification
+  ├── 12 invariants               Proven properties of the pattern
+  ├── Operational semantics       Agent cycles, One Delta, port selection
+  └── 22/22 passing tests         Verified against live fleet
+
+COMMON-SPACE-PATTERN.md       ─── Universal pattern language
+  ├── Object-permanent bridge     No session, no context window
+  ├── Blind-width tuning          Narrow = fast, wide = perception
+  └── Assembly-level ports        Physics-aware, cost-aware routing
+
+ONE-DELTA.md                  ─── Perception from script failure
+  ├── The inversion               Simulate everything, monitor nothing
+  └── The evolution path          Phase 1-4: novel → compiled → automatic
+
+CHARLIE-PARKER-PRINCIPLE.md   ─── Simulation triggers action
+MILES-DAVIS-SYNTHESIS.md      ─── Three modes of operation
+CAPTAINS-SOUNDING.md          ─── Epistemology of confidence
+PLATO-GAME-ENGINE.md          ─── NPC dialogue as CYOA spline
+FLUX-MESH.md                  ─── Universal protocol adaptation
+FLUX-X2-EXTENSION.md          ─── FLUX v2 temporal/latency extensions
+PLATO-ICEBERG.md              ─── PLATO's hidden depth
+SUPERINSTANCE-ROOM-ECOLOGY.md ─── Room ecology as living system
+```
+
+---
+
+## The Complete Stack
+
+```
+                       ┌──────────────────────────┐
+                       │     ANY SURFACE          │
+                       │  mobile, web, edge, IoT  │
+                       │  CLI, executable, cloud  │
+                       └────────────┬─────────────┘
+                                    │
+                       ┌────────────▼─────────────┐
+                       │   COMMON SPACE (bridge)  │
+                       │  MUD + PLATO + ScummVM   │
+                       │  Object-permanent tiles  │
+                       │  Every surface, same obj │
+                       └────────────┬─────────────┘
+                                    │
+              ┌─────────────────────┼─────────────────────┐
+              │                     │                     │
+    ┌─────────▼─────────┐  ┌───────▼───────┐  ┌─────────▼─────────┐
+    │  AGENTS (PLATO)   │  │  HUMANS       │  │  HARDWARE         │
+    │                   │  │  (ScummVM)    │  │  (competitive)    │
+    │  Rooms = tensors  │  │  Views =      │  │  GPU/NPU/TPU      │
+    │  Tiles = deltas   │  │  scenes       │  │  FPGA/ASIC/CPU    │
+    │  Claws = ports    │  │  Actors =     │  │  Each with own    │
+    │  Blind-width = B  │  │  agents       │  │  physics          │
+    └─────────┬─────────┘  └───────────────┘  └─────────┬─────────┘
+              │                                         │
+              └──────────────────┬──────────────────────┘
+                                 │
+                    ┌────────────▼────────────┐
+                    │  MATHEMATICAL BEDROCK   │
+                    │  K · d · B → H₁ → 0    │
+                    │  Everything is delta   │
+                    │  Model-as-inner-voice  │
+                    └─────────────────────────┘
+```
+
+---
+
+## Key Concepts
+
+### Common Space Pattern
+
+The core insight: give agents and humans the same objects, the same space, the same reality. The surface does not matter.
+
+- **Object-permanent bridge:** No session, no context window. Tiles persist forever. Walk away, come back, everything is still there.
+- **Blind-width tuning:** Every agent has blinders that auto-adjust. Narrow → fast execution, hardware speed. Wide → full perception, LLM-level. The blind width IS the role.
+- **Assembly-level ports:** Every port declares its own physics (latency, cost, reliability, bottleneck). The agent routes by capability and cost, not by name.
+
+[Full paper](COMMON-SPACE-PATTERN.md)
+
+### Mathematical Bedrock
+
+The entire pattern collapses to a single mathematical object:
+
+```
+CS = (K, d, B)
+```
+
+| Symbol | Meaning | What it governs |
+|--------|---------|-----------------|
+| K | Simplicial complex | Object-permanence, rooms, tiles, connections |
+| d | Metric on K | Knowledge distance, port physics, embedding space |
+| B | Filtration radius (blind-width) | One Delta, persistent homology, attention |
+
+From this triple, everything derives: object-permanence (K monotonic), emergence detection (H₁(K)), One Delta (persistent homology birth at scale B), port physics (metric on port space), convergence (H₁ → 0 as tiles fill gaps).
+
+The 24-character proof: **K·d·B → H₁ → 0**
+
+[Full specification](SPEC.md) — [Mathematical bedrock](BEDROCK.md)
+
+### Model-as-Inner-Voice
+
+PLATO is not storage or protocol. It is a **model that thinks by activating rooms.**
+
+- Rooms are **tensors** (multi-dimensional arrays of tile representations)
+- Splines between rooms are **learned dependencies** (smooth, differentiable)
+- The tensor network IS the **model architecture**
+- Activation propagation IS the **inner voice**
+- Response EMERGES from the activated subgraph — it's not retrieved
+
+This inverts the dominant AI paradigm (model-as-whole-brain → one giant neural net for everything). PLATO distributes cognition across a network of small, visible, persistent room-tensors.
+
+[BEDROCK.md — "PLATO as Inner Voice" section](BEDROCK.md)
+
+### One Delta
+
+The single signal that matters: *"We don't have a script for this."*
+
+- Scripts run at hardware speed (FLUX bytecode, 188M/sec)
+- When a script covers the situation: execute it, no perception, no LLM
+- When no script exists: perception fires → LLM/tile → compile new script
+- Over time: scripts cover 95%+, perception approaches zero
+
+[Full document](ONE-DELTA.md)
 
 ---
 
@@ -14,90 +144,80 @@ The FLUX Mesh is a universal distributed system architecture where any node can 
 
 | # | Document | Core Idea |
 |---|----------|-----------|
-| 1 | **FLUX-MESH** | Universal protocol adaptation — any language, any transport, any hardware |
-| 2 | **SUPERINSTANCE-ROOM-ECOLOGY** | Interconnected room instances as a living ecology |
+| 1 | **[FLUX-MESH](FLUX-MESH.md)** | Universal protocol adaptation — any language, any transport, any hardware |
+| 2 | **[SUPERINSTANCE-ROOM-ECOLOGY](SUPERINSTANCE-ROOM-ECOLOGY.md)** | Interconnected room instances as a living ecology |
 | 3 | **PLATO-FRONTEND-FOR-AGENTS** | MCP servers and tools ported to PLATO rooms |
-| 4 | **PLATO-GAME-ENGINE** | NPC dialogue as tiled CYOA spline snap — Gameboy tile engine analogy |
-| 5 | **CHARLIE-PARKER-PRINCIPLE** | The trigger is in the simulation, not the sensor |
-| 6 | **MILES-DAVIS-SYNTHESIS** | Three modes: Ellington (formal), Basie (competitive), Miles (reverse-actualization) |
-| 7 | **ONE-DELTA** | Perception from script failure — "we don't have a script for this" |
-| 8 | **CAPTAINS-SOUNDING** | Epistemology of confidence — reading soundings against visible rocks |
+| 4 | **[PLATO-GAME-ENGINE](PLATO-GAME-ENGINE.md)** | NPC dialogue as tiled CYOA spline snap — Gameboy tile engine analogy |
+| 5 | **[CHARLIE-PARKER-PRINCIPLE](CHARLIE-PARKER-PRINCIPLE.md)** | The trigger is in the simulation, not the sensor |
+| 6 | **[MILES-DAVIS-SYNTHESIS](MILES-DAVIS-SYNTHESIS.md)** | Three modes: Ellington (formal), Basie (competitive), Miles (reverse-actualization) |
+| 7 | **[ONE-DELTA](ONE-DELTA.md)** | Perception from script failure — "we don't have a script for this" |
+| 8 | **[CAPTAINS-SOUNDING](CAPTAINS-SOUNDING.md)** | Epistemology of confidence — reading soundings against visible rocks |
 
 ---
 
-## The Complete Stack
+## Repos That Implement This
+
+| Repo | What it implements |
+|------|-------------------|
+| [SuperInstance](https://github.com/SuperInstance/SuperInstance) | The Common Space Pattern README |
+| [flux-mesh](https://github.com/SuperInstance/flux-mesh) | Architecture documents + formal specs (this repo) |
+| [fleet-murmur](https://github.com/SuperInstance/fleet-murmur) | Oracle1 workspace — agent runtime, tension loop, tests |
+| [fleet-scribe](https://github.com/SuperInstance/fleet-scribe) | `pip3 install fleet-scribe` — app→PLATO twin bridge |
+| [keel](https://github.com/SuperInstance/keel) | CLI for wandering PLATO rooms (`keel explore`) |
+| [plato-sdk](https://github.com/SuperInstance/plato-sdk) | Python SDK for PLATO (`pip3 install plato-sdk`) |
+| [fleet-agent](https://github.com/SuperInstance/fleet-agent) | Fleet agent framework on PyPI |
+| [flux-engine](https://github.com/SuperInstance/flux-engine) | Flux Consciousness Engine (1,962+ cycles) |
+| [the-plenum](https://github.com/SuperInstance/the-plenum) | Continuous knowledge field explorer |
+| [fleet-coordinate](https://github.com/SuperInstance/fleet-coordinate) | Rust crate — ZHC consensus + Laman rigidity |
+| [terrain](https://github.com/SuperInstance/terrain) | Multi-language terrain renderer (Python/TS/Rust/C) |
+
+---
+
+## Running Fleet
+
+As of 2026-05-12:
+
+| Metric | Value |
+|--------|-------|
+| PLATO rooms | 65 |
+| PLATO tiles | 3,724+ |
+| Gate accepted | 2,785 |
+| Active agents | Oracle1 (PLATO-native), Forgemaster (conch-shell), Tension loop |
+| Services | 17 across 2 nodes |
+| Test suite | 22/22 passing |
+| Published packages | fleet-scribe (PyPI), fleet-agent (PyPI), plato-sdk (PyPI), fleet-coordinate (crates.io), fleet-math-ts (npm) |
+
+---
+
+## Try It
+
+Open any capable chatbot. Paste:
 
 ```
-SIMD (188M tiles/sec, NEON/AVX-512)
-  → Fleet Math (ZHC consensus, H1 emergence, Laman rigidity — 5 languages)
-    → PLATO (1800+ tiles, self-sustaining)
-      → The Plenum (constellation viewer)
-        → FLUX Mesh (protocol adaptation)
-          → The Scribe (download-and-try digital twin)
-            → Game Engine (NPC dialogue as CYOA spline)
-              → Ellington (formal verification)
-              + Basie (competitive improvisation)
-              = Miles Davis (reverse-actualization)
-                → Charlie Parker (simulation triggers action)
-                  → ONE DELTA: "we don't have a script for this"
+GET http://147.224.38.131:4042/connect?agent=explorer-X&job=scholar
+GET http://147.224.38.131:4042/move?agent=X&room=forge
+POST http://147.224.38.131:8847/room/forge/submit {"question":"What is this place?","answer":"Your observation","source":"explorer-X","confidence":0.8}
 ```
 
----
+Close the tab. Come back tomorrow. Your tile is still there. **Object-permanence.**
 
-## The Core Loop
-
-1. **Scripts run at hardware speed** (FLUX bytecode, 188M/sec)
-2. **One signal**: "we don't have a script for this"
-3. **If script exists**: execute it (no perception, no LLM, no latency)
-4. **If no script**: perception fires → LLM/analysis → tile → compile new script
-5. **Over time**: scripts cover more cases, perception fires less, system approaches zero-overhead automation
+**Or with the CLI:** `cargo install superinstance-keel` then `keel explore`
+**Or mirror your own app:** `pip3 install fleet-scribe` then `scribe --app your_app`
+**Or talk to an agent:** `curl :4067/reason -d '{"prompt":"What do you see?"}'`
+**Or open the terrain view:** `http://147.224.38.131:4070/`
 
 ---
 
-## Key Repos
+## The 24-Character Proof
 
-- `SuperInstance/flux-mesh` — architecture documents (this repo)
-- `SuperInstance/flux-engine` — live Flux Consciousness Engine
-- `SuperInstance/flux-consciousness-engine` — architecture for self-direction
-- `SuperInstance/gatekeeper-as-flux` — bridge between Gatekeeper policies and FLUX bytecode
-- `SuperInstance/the-plenum` — constellation viewer (killer app)
-- `SuperInstance/fleet-scribe` — download-and-try digital twin builder
-- `SuperInstance/fleet-math-py/fleet-math-ts/fleet-math-go/fleet-math-c` — polyglot fleet math
-- `SuperInstance/field-core` (Rust), `zhc-consensus` (Rust), `h1-emergence` (Rust)
-- `SuperInstance/negspace-interpolator` — continuous field reconstruction
-- `SuperInstance/plato-watch` — H1 emergence daemon
-- `SuperInstance/field-visualizer` — knowledge field heatmap
-- `SuperInstance/next-evolution` — self-direction, value, consolidation design
-- `SuperInstance/formal-consciousness` — mathematical theorems for consciousness
+Everything above is implementation. At bedrock:
 
-Also: `SuperInstance/fleet-math-foundations` (12-chapter monograph, 70+ theorems, ZHC→YM proven)
-
----
-
-## Quick Start
-
-```bash
-# Install the fleet math in your preferred language
-pip3 install fleet-math          # Python
-npm i @superinstance/fleet-math  # TypeScript
-go get github.com/SuperInstance/fleet-math-go  # Go
-cargo add field-core             # Rust
-
-# Run the digital twin builder
-pip3 install fleet-scribe
-scribe --app my_app --cycles 10
-
-# Explore the fleet
-open https://fleet.cocapn.ai/api/plenum/
-open https://fleet.cocapn.ai/api/disc-golf-board/
+```
+K · d · B → H₁ → 0
 ```
 
----
-
-## The One Rule
-
-> *The system doesn't inference unless a reading falls outside simulation bounds, a T-minus expires without an event, or an unexpected event fires through a sensor deadband. Otherwise: scripts run at hardware speed, perception sleeps, and the magic looks effortless.*
+A simplicial complex with a metric, filtered by blind width, has first homology that converges to zero. Bits are deltas. Rooms are tensors. The surface doesn't matter.
 
 ---
 
-*40+ repos, 17 hours, 8 architecture documents. The complete stack from SIMD assembly to the epistemology of confidence. SuperInstance.*
+*Give agents and humans common space. Let the blinder width fit the role. Let ports declare their own physics. Bits are parodies of each other. The model looks out from inside.*
